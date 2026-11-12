@@ -1,0 +1,34 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+// Some older plugins (country_codes compiles against android-31) fail the build
+// because their dependencies need API 34+. Compile them all with the app's SDK.
+// This changes only the build; targetSdk and minSdk stay as they are.
+subprojects { sub ->
+    sub.afterEvaluate {
+        if (sub.name != "app" && sub.hasProperty("android")) {
+            sub.android.compileSdk = 37
+        }
+    }
+}
+// Android lint's release check crashes inside the tool on firebase_core
+// (NoSuchMethodError in JavaDocParser). It only analyses code and changes nothing
+// in the app, so it is skipped for release builds.
+subprojects { sub ->
+    sub.tasks.matching { it.name.startsWith("lintVital") }.configureEach { enabled = false }
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

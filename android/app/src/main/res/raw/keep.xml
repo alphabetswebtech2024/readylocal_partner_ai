@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Keep files that only native code references when resources are shrunk. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/notification_sound,@drawable/ic_notification,@drawable/launch_logo,@drawable/splash_icon" />
